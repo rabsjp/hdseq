@@ -59,5 +59,5 @@ d$tree[d$tre==2]<-1
 d$treo<-0
 d$treo[d$tre==0]<-1
 d$idu<-d$session*100+d$id
-d$idg<-d$session*10+d$group
+d$idg<-d$session*1000+d$period*10+d$group
 save(d,file='hdall.Rda')
