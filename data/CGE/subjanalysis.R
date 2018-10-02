@@ -54,6 +54,61 @@ axis(1, at=x,labels=as.character.numeric_version(x), las=1)
 text(92.5,0.25,expression(x^{CGE}),cex = 1)
 dev.off()
 
+days_cutoff<-dsub$mediancut[dsub$tres==1 & dsub$moverate<=0.5]
+nights_cutoff<-dsub$mediancut[dsub$tres==1 & dsub$moverate>0.5]
+cdf_xs_day<-  ecdf(days_cutoff)
+cdf_xs_night<-  ecdf(nights_cutoff)
+
+pdf("cdfmove_s_cutoff.pdf")
+plot(cdf_xs_day,verticals=T,xlim=c(0,101),cex=0,lwd=3,main="",xlab="cutoff",ylab="CDF",xaxt='n')
+lines(cdf_xs_night,verticals=T,lty=2,cex=0,lwd=1)
+legend(0.01,0.9,legend=c("CGS first mover","CGS second mover"),lwd=c(3,1),lty=c(1,2),bty = "n",y.intersp=2,border=F,cex=1)
+abline(h=.5,col="gray",lty=c(1))
+abline(v=90,col="gray",lty=c(1)) #eqm for cge
+axis(1, at=x,labels=as.character.numeric_version(x), las=1)
+
+text(92.5,0.25,expression(x^{CGS}),cex = 1)
+dev.off()
+
+
+
+
+
+
+
+day_m_cutoff<-dsub$mediancut[dsub$tree==1 & dsub$moverate<=0.5 & dsub$gender==1]
+night_m_cutoff<-dsub$mediancut[dsub$tree==1 & dsub$moverate>0.5& dsub$gender==1]
+day_f_cutoff<-dsub$mediancut[dsub$tree==1 & dsub$moverate<=0.5 & dsub$gender==0]
+night_f_cutoff<-dsub$mediancut[dsub$tree==1 & dsub$moverate>0.5& dsub$gender==0]
+
+cdf_xem_night<-  ecdf(night_m_cutoff)
+cdf_xem_day<-ecdf(day_m_cutoff)
+cdf_xef_night<-  ecdf(night_f_cutoff)
+cdf_xef_day<-ecdf(day_f_cutoff)
+
+pdf("cdfmove_m_cutoff.pdf")
+plot(cdf_xem_day,verticals=T,xlim=c(0,101),cex=0,lwd=3,main="",xlab="cutoff",ylab="CDF",xaxt='n')
+lines(cdf_xem_night,verticals=T,lty=2,cex=0,lwd=1)
+legend(0.01,0.9,legend=c("CGE first mover","CGE second mover"),lwd=c(3,1),lty=c(1,2),bty = "n",y.intersp=2,border=F,cex=1)
+abline(h=.5,col="gray",lty=c(1))
+abline(v=90,col="gray",lty=c(1)) #eqm for cge
+axis(1, at=x,labels=as.character.numeric_version(x), las=1)
+
+text(92.5,0.25,expression(x^{CGE}),cex = 1)
+dev.off()
+
+pdf("cdfmove_f_cutoff.pdf")
+plot(cdf_xef_day,verticals=T,xlim=c(0,101),cex=0,lwd=3,main="",xlab="cutoff",ylab="CDF",xaxt='n')
+lines(cdf_xef_night,verticals=T,lty=2,cex=0,lwd=1)
+legend(0.01,0.9,legend=c("CGE first mover","CGE second mover"),lwd=c(3,1),lty=c(1,2),bty = "n",y.intersp=2,border=F,cex=1)
+abline(h=.5,col="gray",lty=c(1))
+abline(v=90,col="gray",lty=c(1)) #eqm for cge
+axis(1, at=x,labels=as.character.numeric_version(x), las=1)
+
+text(92.5,0.25,expression(x^{CGE}),cex = 1)
+dev.off()
+
+
 
 cdf_ch<-  ecdf(dsub$choicerate[dsub$treo==1])
 cdf_chs<-  ecdf(dsub$choicerate[dsub$tres==1])
