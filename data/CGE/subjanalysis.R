@@ -158,8 +158,10 @@ lines(cdf_xfe,verticals=T,lty=2,cex=0,lwd=1)
 axis(1, at=x,labels=as.character.numeric_version(x), las=1)
 abline(h=.5,col="gray",lty=c(1))
 abline(v=90,col="gray",lty=c(1)) #eqm for cge
-#abline(v=33.33,col="gray",lty=c(1)) #eqm for cgo
-text(92.5,0.25,expression(x^{CGE}),cex = 1)
+abline(v=33.33,col="gray",lty=c(1)) #eqm for cgo
+text(92.5,0.25,expression(x^{CGS}),cex = 1)
+text(36,0.825,expression(x^{CGO}),cex = 1)
+
 legend(0.01,0.9,legend=c("CGE male","CGE female"),lwd=c(3,1),lty=c(1,2),bty = "n",y.intersp=2,border=F,cex=1)
 dev.off()
 
@@ -218,10 +220,21 @@ dsub$gtres<-dsub$tres*dsub$gender
 
 summary(lm(dsub$cutoff[dsub$tree==1] ~ dsub$move[dsub$tree==1]))
 
+###Tests
+n<-length(dsub$mediancut[dsub$treo==1])
+ks.test(dsub$mediancut[dsub$treo==1],dsub$mediancut[dsub$tres==1],alternative = c("greater"))
+
+ks.test(dsub$mediancut[dsub$tres==1],dsub$mediancut[dsub$tree==1],alternative = c("two.sided"))
+
+
 wilcox.test(dsub$mediancut[dsub$tres==1],dsub$mediancut[dsub$treo==1],alternative = "g")
 ks.test(dsub$mediancut[dsub$tres==1],dsub$mediancut[dsub$treo==1],alternative = "l")
 
 wilcox.test(dsub$mediancut[dsub$tree==1],dsub$mediancut[dsub$treo==1],alternative = "g")
 ks.test(dsub$mediancut[dsub$tree==1],dsub$mediancut[dsub$treo==1],alternative = "l")
       
-ks.test(dsub$mediancut[dsub$gender==1 & dsub$tree==1],dsub$mediancut[dsub$gender==1 & dsub$treo==1],alternative = "l")
+wilcox.test(dsub$mediancut[dsub$treo==1 & dsub$gender==0],dsub$mediancut[dsub$treo==1 & dsub$gender==1],alternative = "two.sided")
+ks.test(dsub$mediancut[dsub$treo==1 & dsub$gender==0],dsub$mediancut[dsub$treo==1 & dsub$gender==1],alternative = "two.sided")
+
+
+x
