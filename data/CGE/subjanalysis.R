@@ -138,7 +138,7 @@ abline(h=.5,col="gray",lty=c(1))
 #abline(v=90,col="gray",lty=c(1)) #eqm for cge
 abline(v=33.33,col="gray",lty=c(1)) #eqm for cgo
 text(36,0.825,expression(x^{CGO}),cex = 1)
-legend(0.01,0.9,legend=c("CGO male","CGO female"),lwd=c(3,1),lty=c(1,2),bty = "n",y.intersp=2,border=F,cex=1)
+legend(0.01,0.9,legend=c("CGO men","CGO women"),lwd=c(3,1),lty=c(1,2),bty = "n",y.intersp=2,border=F,cex=1)
 dev.off()
 
 pdf("cdfcutoffgender_s.pdf")
@@ -149,7 +149,7 @@ abline(h=.5,col="gray",lty=c(1))
 abline(v=90,col="gray",lty=c(1)) #eqm for cge
 #abline(v=33.33,col="gray",lty=c(1)) #eqm for cgo
 text(92.5,0.25,expression(x^{CGS}),cex = 1)
-legend(0.01,0.9,legend=c("CGS male","CGS female"),lwd=c(3,1),lty=c(1,2),bty = "n",y.intersp=2,border=F,cex=1)
+legend(0.01,0.9,legend=c("CGS men","CGS women"),lwd=c(3,1),lty=c(1,2),bty = "n",y.intersp=2,border=F,cex=1)
 dev.off()
 
 pdf("cdfcutoffgender_e.pdf")
@@ -162,7 +162,7 @@ abline(v=33.33,col="gray",lty=c(1)) #eqm for cgo
 text(92.5,0.25,expression(x^{CGS}),cex = 1)
 text(36,0.825,expression(x^{CGO}),cex = 1)
 
-legend(0.01,0.9,legend=c("CGE male","CGE female"),lwd=c(3,1),lty=c(1,2),bty = "n",y.intersp=2,border=F,cex=1)
+legend(0.01,0.9,legend=c("CGE men","CGE women"),lwd=c(3,1),lty=c(1,2),bty = "n",y.intersp=2,border=F,cex=1)
 dev.off()
 
 pdf("cdfcutoffgender_female.pdf")
@@ -176,7 +176,7 @@ abline(v=33.33,col="gray",lty=c(1)) #eqm for cgo
 
 text(92.5,0.25,expression(x^{CGS}),cex = 1)
 text(36,0.825,expression(x^{CGO}),cex = 1)
-legend(0.01,0.9,legend=c("CGO female","CGS female","CGE female"),lwd=c(3,1,2),lty=c(1,2,3),bty = "n",y.intersp=2,border=F,cex=1)
+legend(0.01,0.9,legend=c("CGO women","CGS women","CGE women"),lwd=c(3,1,2),lty=c(1,2,3),bty = "n",y.intersp=2,border=F,cex=1)
 
 dev.off()
 
@@ -191,7 +191,7 @@ abline(v=33.33,col="gray",lty=c(1)) #eqm for cgo
 
 text(92.5,0.25,expression(x^{CGS}),cex = 1)
 text(36,0.825,expression(x^{CGO}),cex = 1)
-legend(0.01,0.9,legend=c("CGO male","CGS male","CGE male"),lwd=c(3,1,2),lty=c(1,2,3),bty = "n",y.intersp=2,border=F,cex=1)
+legend(0.01,0.9,legend=c("CGO men","CGS men","CGE men"),lwd=c(3,1,2),lty=c(1,2,3),bty = "n",y.intersp=2,border=F,cex=1)
 dev.off()
 
 wilcox.test(dsub$mediancut[dsub$tres==1 & dsub$gender==0],dsub$mediancut[dsub$treo==1 & dsub$gender==0],alternative = "g")
@@ -211,7 +211,7 @@ lines(cdfmovef,verticals=T,lty=2,cex=0,lwd=1)
 abline(h=.5,col="gray",lty=c(1))
 xch<-seq(0.0,1.0,.1)
 axis(1, at=xch,labels=as.character.numeric_version(xch), las=1)
-legend(0.01,0.9,legend=c("male","female"),lwd=c(3,1),lty=c(1,2),bty = "n",y.intersp=2,border=F,cex=1)
+legend(0.01,0.9,legend=c("men","women"),lwd=c(3,1),lty=c(1,2),bty = "n",y.intersp=2,border=F,cex=1)
 dev.off()
 
 

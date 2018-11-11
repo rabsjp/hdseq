@@ -4,24 +4,24 @@ load("hdall.Rda")
 
 ### Gender composition in each session
 gendersession<-table(d$session,d$gender)
-profitsession<-ave(d$payoff,d$session,FUN=function(x) mean(x, na.rm=T))
+profitsession<-ave(d$payoff,d$tre,FUN=function(x) mean(x, na.rm=T))
 profitsession<-unique(profitsession)
 totalobs<-apply(table(d$session,d$gender),1,sum)
 
 
 ## We work with periods 6-11 to account for learning
-dpool<-d[d$period>5,]
+#dpool<-d[d$period>5,]
+dpool<-d
 dpool$firstmover<-0
 dpool$cell<-ave(dpool$play,dpool$idg,FUN=function(x) sum(x, na.rm=T))
+dpool$dd<-0
+dpool$dd[dpool$cell==2]<-1
 dpool$movewhere<-ave(dpool$move,dpool$idg,FUN=function(x) sum(x, na.rm=T))
 dpool$gendergroup<-ave(dpool$gender,dpool$idg,FUN=function(x) sum(x, na.rm=T))
 dpool$firstmover[dpool$move==0 & dpool$tre>0]<-dpool$play[dpool$move==0& dpool$tre>0]
 dpool$firstmover<-ave(dpool$firstmover,dpool$idg,FUN=function(x) sum(x, na.rm=T))
 
 table(dpool$play[dpool$movewhere==1 & dpool$move==1 & dpool$tree==1],dpool$firstmover[dpool$movewhere==1 & dpool$move==1 & dpool$tree==1])
-
-
-
 
 cello<-table(dpool$cell[dpool$treo==1])/length(dpool$cell[dpool$treo==1])
 cells<-table(dpool$cell[dpool$tres==1])/length(dpool$cell[dpool$tres==1])
@@ -41,12 +41,14 @@ cell.barp<-barplot(cell.bar,beside=T,ylim=c(0,.8),border="white")
 lines(x = cell.barp[1,]+1, y = poolcut_m/101,lty=2,lwd=2)
 lines(x = cell.barp[1,]+1, y = poolcut_f/101,lty=1,lwd=3)
 legend(0.6,0.8,inset=.02,legend=c("HH","HD","DD"),fill=gray.colors(3),bty = "n",border=F,y.intersp=.8,cex=.9)
-text(cell.barp[1,3]+1.5,0.77,"cutoff male",cex = .8)
-text(cell.barp[1,3],0.6,"cutoff female",cex = .8)
+text(cell.barp[1,3]+1.5,0.77,"men cutoff",cex = .8)
+text(cell.barp[1,3],0.6,"women cutoff ",cex = .8)
 dev.off()
 
-###What outcomes (CELLs) we observe in CGS at different moves? 
-table(dpool$cell[dpool$tree==1],dpool$movewhere[dpool$tree==1])
+###What outcomes (CELLs) we observe in CGE at different moves? 
+cellmove<-round(table(dpool$cell[dpool$tree==1],dpool$movewhere[dpool$tree==1])/sum(table(dpool$movewhere[dpool$tree==1]))*100,2)
+rownames(cellmove)<-c("HH","HD","DD")
+colnames(cellmove)<-c("oneshot 1st","seq.","oneshot 2nd")
 
 ### Who moves first by gender? 
 movegender<-table(dpool$gender[dpool$tree==1],dpool$move[dpool$tree==1])
@@ -58,9 +60,9 @@ colnames(playfirstgender)<-c("1st H","1st D")
 playsecondgender<-table(dpool$gender[dpool$tree==1 & dpool$move==1],dpool$play[dpool$tree==1 & dpool$move==1])
 colnames(playsecondgender)<-c("2nd H","2nd D")
 
-pdf("countgendermoveplay.pdf")
+pdf("countgendermoveplay.png")
 barplot((cbind(movegender,playfirstgender,playsecondgender)/sum(movegender)),beside=T,border="white",ylim=c(0,0.4))
-legend(12,0.3,inset=.02,legend=c("female","male"),fill=gray.colors(2),bty = "n",border=F,y.intersp=1.5,cex=1.2)
+legend(12,0.3,inset=.02,legend=c("women","men"),fill=gray.colors(2),bty = "n",border=F,y.intersp=1.5,cex=1.2)
 dev.off()
 
 ##For those that pick second and its a one-shot, what do they play? 
@@ -78,9 +80,36 @@ poolpayoff<-ave(dpool$payoff,dpool$tre,FUN=function(x) mean(x, na.rm=T))
 poolpayoff<-unique(poolpayoff)
 
 ### Regressions
-dreg<-dpool[dpool$tree==1 & dpool$move==0,]
+dreg<-dpool[dpool$treo==1,]
 mylogit <- lm(play ~ play, data = dereg, family = "binomial")
 m <- lm(play ~ gender, data = dreg)
+m <- lm(payoff ~ gender, data = dreg)
+
+
 library(sandwich)
+
+dpool$tredd<-ave(dpool$dd,dpool$session,FUN=function(x) mean(x, na.rm=T))
+
+testdd<-unique(dpool[,c("session","tredd")])
+
+ks.test(testdd$tredd[testdd$session<20],testdd$tredd[testdd$session>30],alternative = c("g"))
+wilcox.test(testdd$tredd[testdd$session<20],testdd$tredd[testdd$session>30],alternative = c("l"))
+
+playgendero<-table(dpool$play[dpool$treo==1],dpool$gender[dpool$treo==1])
+
+playgenders<-table(dpool$play[dpool$tres==1],dpool$gender[dpool$tres==1])
+
+playgender<-table(dpool$play[dpool$tree==1],dpool$gender[dpool$tree==1])
+
+
+playo<-playgendero[2,]/apply(playgendero,2,sum)*100
+plays<-playgenders[2,]/apply(playgenders,2,sum)*100
+playe<-playgender[2,]/apply(playgender,2,sum)*100
+play.bar<-cbind(playo,plays,playe)
+colnames(play.bar)<-c("CGO","CGS","CGE")
+pdf("genderplay.png")
+play.barp<-barplot(play.bar,beside=T,ylim=c(0,100),border="white")
+legend(2.0,100,inset=.1,legend=c("% women playing D","% men playing D"),fill=gray.colors(2),bty = "n",border=F,y.intersp=2,cex=0.9)
+dev.off()
 
 
