@@ -10,7 +10,7 @@ totalobs<-apply(table(d$session,d$gender),1,sum)
 
 
 ## We work with periods 6-11 to account for learning
-#dpool<-d[d$period>5,]
+dpool<-d[d$period>5,]
 dpool<-d
 dpool$firstmover<-0
 dpool$cell<-ave(dpool$play,dpool$idg,FUN=function(x) sum(x, na.rm=T))
@@ -21,7 +21,8 @@ dpool$gendergroup<-ave(dpool$gender,dpool$idg,FUN=function(x) sum(x, na.rm=T))
 dpool$firstmover[dpool$move==0 & dpool$tre>0]<-dpool$play[dpool$move==0& dpool$tre>0]
 dpool$firstmover<-ave(dpool$firstmover,dpool$idg,FUN=function(x) sum(x, na.rm=T))
 
-table(dpool$play[dpool$movewhere==1 & dpool$move==1 & dpool$tree==1],dpool$firstmover[dpool$movewhere==1 & dpool$move==1 & dpool$tree==1])
+table(dpool$play[dpool$movewhere==1 & dpool$move==1 & dpool$tres==1],dpool$firstmover[dpool$movewhere==1 & dpool$move==1 & dpool$tres==1])/396
+table(dpool$gender[dpool$movewhere==1 & dpool$move==1 & dpool$tres==1 & dpool$firstmover==1],dpool$play[dpool$movewhere==1 & dpool$move==1 & dpool$tres==1 & dpool$firstmover==1])
 
 cello<-table(dpool$cell[dpool$treo==1])/length(dpool$cell[dpool$treo==1])
 cells<-table(dpool$cell[dpool$tres==1])/length(dpool$cell[dpool$tres==1])
@@ -60,9 +61,27 @@ colnames(playfirstgender)<-c("1st H","1st D")
 playsecondgender<-table(dpool$gender[dpool$tree==1 & dpool$move==1],dpool$play[dpool$tree==1 & dpool$move==1])
 colnames(playsecondgender)<-c("2nd H","2nd D")
 
+##In the sequential game. What 2nd mover plays?
+#table(dpool$play[dpool$]
+
+
+
 pdf("countgendermoveplay.png")
 barplot((cbind(movegender,playfirstgender,playsecondgender)/sum(movegender)),beside=T,border="white",ylim=c(0,0.4))
 legend(12,0.3,inset=.02,legend=c("women","men"),fill=gray.colors(2),bty = "n",border=F,y.intersp=1.5,cex=1.2)
+dev.off()
+
+playgendero<-table(dpool$play[dpool$treo==1],dpool$gender[dpool$treo==1])
+playgenders<-table(dpool$play[dpool$tres==1],dpool$gender[dpool$tres==1])
+playgender<-table(dpool$play[dpool$tree==1],dpool$gender[dpool$tree==1])
+playo<-playgendero[2,]/apply(playgendero,2,sum)*100
+plays<-playgenders[2,]/apply(playgenders,2,sum)*100
+playe<-playgender[2,]/apply(playgender,2,sum)*100
+play.bar<-cbind(playo,plays,playe)
+colnames(play.bar)<-c("CGO","CGS","CGE")
+pdf("genderplay.png")
+play.barp<-barplot(play.bar,beside=T,ylim=c(0,100),border="white")
+legend(2.0,100,inset=.1,legend=c("% women playing D","% men playing D"),fill=gray.colors(2),bty = "n",border=F,y.intersp=2,cex=0.9)
 dev.off()
 
 ##For those that pick second and its a one-shot, what do they play? 
@@ -86,30 +105,14 @@ m <- lm(play ~ gender, data = dreg)
 m <- lm(payoff ~ gender, data = dreg)
 
 
-library(sandwich)
-
+##Non-parametric tests 
 dpool$tredd<-ave(dpool$dd,dpool$session,FUN=function(x) mean(x, na.rm=T))
-
 testdd<-unique(dpool[,c("session","tredd")])
 
 ks.test(testdd$tredd[testdd$session<20],testdd$tredd[testdd$session>30],alternative = c("g"))
 wilcox.test(testdd$tredd[testdd$session<20],testdd$tredd[testdd$session>30],alternative = c("l"))
 
-playgendero<-table(dpool$play[dpool$treo==1],dpool$gender[dpool$treo==1])
-
-playgenders<-table(dpool$play[dpool$tres==1],dpool$gender[dpool$tres==1])
-
-playgender<-table(dpool$play[dpool$tree==1],dpool$gender[dpool$tree==1])
-
-
-playo<-playgendero[2,]/apply(playgendero,2,sum)*100
-plays<-playgenders[2,]/apply(playgenders,2,sum)*100
-playe<-playgender[2,]/apply(playgender,2,sum)*100
-play.bar<-cbind(playo,plays,playe)
-colnames(play.bar)<-c("CGO","CGS","CGE")
-pdf("genderplay.png")
-play.barp<-barplot(play.bar,beside=T,ylim=c(0,100),border="white")
-legend(2.0,100,inset=.1,legend=c("% women playing D","% men playing D"),fill=gray.colors(2),bty = "n",border=F,y.intersp=2,cex=0.9)
-dev.off()
+ks.test(testdd$tredd[testdd$session>20 & testdd$session<30],testdd$tredd[testdd$session>30],alternative = c("two.sided"))
+wilcox.test(testdd$tredd[testdd$session>20 & testdd$session<30],testdd$tredd[testdd$session>30],alternative = c("two.sided"))
 
 

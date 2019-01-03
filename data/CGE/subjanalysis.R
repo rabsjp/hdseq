@@ -70,12 +70,6 @@ axis(1, at=x,labels=as.character.numeric_version(x), las=1)
 text(92.5,0.25,expression(x^{CGS}),cex = 1)
 dev.off()
 
-
-
-
-
-
-
 day_m_cutoff<-dsub$mediancut[dsub$tree==1 & dsub$moverate<=0.5 & dsub$gender==1]
 night_m_cutoff<-dsub$mediancut[dsub$tree==1 & dsub$moverate>0.5& dsub$gender==1]
 day_f_cutoff<-dsub$mediancut[dsub$tree==1 & dsub$moverate<=0.5 & dsub$gender==0]
@@ -107,8 +101,6 @@ axis(1, at=x,labels=as.character.numeric_version(x), las=1)
 
 text(92.5,0.25,expression(x^{CGE}),cex = 1)
 dev.off()
-
-
 
 cdf_ch<-  ecdf(dsub$choicerate[dsub$treo==1])
 cdf_chs<-  ecdf(dsub$choicerate[dsub$tres==1])
@@ -194,10 +186,9 @@ text(36,0.825,expression(x^{CGO}),cex = 1)
 legend(0.01,0.9,legend=c("CGO men","CGS men","CGE men"),lwd=c(3,1,2),lty=c(1,2,3),bty = "n",y.intersp=2,border=F,cex=1)
 dev.off()
 
+## Test 
 wilcox.test(dsub$mediancut[dsub$tres==1 & dsub$gender==0],dsub$mediancut[dsub$treo==1 & dsub$gender==0],alternative = "g")
 ks.test(dsub$mediancut[dsub$tres==1 & dsub$gender==0],dsub$mediancut[dsub$treo==1 & dsub$gender==0],alternative = "l")
-
-
 
 # who moves early? 
 
@@ -222,9 +213,15 @@ summary(lm(dsub$cutoff[dsub$tree==1] ~ dsub$move[dsub$tree==1]))
 
 ###Tests
 n<-length(dsub$mediancut[dsub$treo==1])
+ks.test(dsub$mediancut[dsub$treo==1],rep(33,n),alternative = c("l"))
+wilcox.test(dsub$mediancut[dsub$treo==1],rep(33,n),alternative = "g")
+
+
 ks.test(dsub$mediancut[dsub$treo==1],dsub$mediancut[dsub$tres==1],alternative = c("greater"))
+wilcox.test(dsub$mediancut[dsub$tres==1],dsub$mediancut[dsub$treo==1],alternative = "g")
 
 ks.test(dsub$mediancut[dsub$tres==1],dsub$mediancut[dsub$tree==1],alternative = c("two.sided"))
+wilcox.test(dsub$mediancut[dsub$tres==1],dsub$mediancut[dsub$tree==1],alternative = c("two.sided"))
 
 
 wilcox.test(dsub$mediancut[dsub$tres==1],dsub$mediancut[dsub$treo==1],alternative = "g")
@@ -233,8 +230,6 @@ ks.test(dsub$mediancut[dsub$tres==1],dsub$mediancut[dsub$treo==1],alternative = 
 wilcox.test(dsub$mediancut[dsub$tree==1],dsub$mediancut[dsub$treo==1],alternative = "g")
 ks.test(dsub$mediancut[dsub$tree==1],dsub$mediancut[dsub$treo==1],alternative = "l")
       
-wilcox.test(dsub$mediancut[dsub$treo==1 & dsub$gender==0],dsub$mediancut[dsub$treo==1 & dsub$gender==1],alternative = "two.sided")
-ks.test(dsub$mediancut[dsub$treo==1 & dsub$gender==0],dsub$mediancut[dsub$treo==1 & dsub$gender==1],alternative = "two.sided")
+wilcox.test(dsub$mediancut[dsub$tres==1 & dsub$gender==0],dsub$mediancut[dsub$tres==1 & dsub$gender==1],alternative = "two.sided")
+ks.test(dsub$mediancut[dsub$tres==1 & dsub$gender==0],dsub$mediancut[dsub$tres==1 & dsub$gender==1],alternative = "two.sided")
 
-
-x

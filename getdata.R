@@ -44,7 +44,7 @@ for (i in seq_along(files)) {
   df$session<-30+i
   df$move<-as.numeric(df$move)-1 #dia is 0 and noche 1 
   df$play<-as.numeric(df$play)-1 #B is 1 and A is 0
-  df$gender<-as.numeric(df$gender)-1 #male is 1 female is 0 
+  df$gender<-as.numeric(df$gender)-1 #men is 1 women is 0 
   df$gender<-ave(df$gender,df$id,FUN=function(x) max(x, na.rm=T))
   d<-rbind(d,df)
 }
