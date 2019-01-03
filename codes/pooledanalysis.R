@@ -1,16 +1,19 @@
+### It contains analysis using pooled data
+### The data from sessions are in /data folder
+
 rm(list = ls())
 setwd("/cloud/project/data/")
 load("hdall.Rda")
 
-### Gender composition in each session
+### Table with gender composition in each session
 gendersession<-table(d$session,d$gender)
 profitsession<-ave(d$payoff,d$tre,FUN=function(x) mean(x, na.rm=T))
 profitsession<-unique(profitsession)
 totalobs<-apply(table(d$session,d$gender),1,sum)
 
 
-## We work with periods 6-11 to account for learning
-dpool<-d[d$period>5,]
+### Creating important variables
+#dpool<-d[d$period>5,]
 dpool<-d
 dpool$firstmover<-0
 dpool$cell<-ave(dpool$play,dpool$idg,FUN=function(x) sum(x, na.rm=T))
@@ -21,14 +24,18 @@ dpool$gendergroup<-ave(dpool$gender,dpool$idg,FUN=function(x) sum(x, na.rm=T))
 dpool$firstmover[dpool$move==0 & dpool$tre>0]<-dpool$play[dpool$move==0& dpool$tre>0]
 dpool$firstmover<-ave(dpool$firstmover,dpool$idg,FUN=function(x) sum(x, na.rm=T))
 
+## Analyzing choices of first mover and gender
 table(dpool$play[dpool$movewhere==1 & dpool$move==1 & dpool$tres==1],dpool$firstmover[dpool$movewhere==1 & dpool$move==1 & dpool$tres==1])/396
 table(dpool$gender[dpool$movewhere==1 & dpool$move==1 & dpool$tres==1 & dpool$firstmover==1],dpool$play[dpool$movewhere==1 & dpool$move==1 & dpool$tres==1 & dpool$firstmover==1])
 
+## Frequency of cells 
 cello<-table(dpool$cell[dpool$treo==1])/length(dpool$cell[dpool$treo==1])
 cells<-table(dpool$cell[dpool$tres==1])/length(dpool$cell[dpool$tres==1])
 celle<-table(dpool$cell[dpool$tree==1])/length(dpool$cell[dpool$tree==1])
 cell.bar<-cbind(cello,cells,celle)
 colnames(cell.bar)<-c("CGO","CGS","CGE")
+
+### Creating cutoff choices. Mean by treatment 
 poolcut<-ave(dpool$cutoff,dpool$tre,FUN=function(x) mean(x, na.rm=T))
 poolcut<-unique(poolcut)
 
@@ -37,6 +44,8 @@ poolcut_m<-unique(poolcut_m)
 poolcut_f<-ave(dpool$cutoff[dpool$gender==0],dpool$tre[dpool$gender==0],FUN=function(x) mean(x, na.rm=T))
 poolcut_f<-unique(poolcut_f)
 
+
+## Plot of cutoffs and cell choices
 pdf("jointcut.pdf")
 cell.barp<-barplot(cell.bar,beside=T,ylim=c(0,.8),border="white")
 lines(x = cell.barp[1,]+1, y = poolcut_m/101,lty=2,lwd=2)
@@ -46,7 +55,7 @@ text(cell.barp[1,3]+1.5,0.77,"men cutoff",cex = .8)
 text(cell.barp[1,3],0.6,"women cutoff ",cex = .8)
 dev.off()
 
-###What outcomes (CELLs) we observe in CGE at different moves? 
+### Table of outcomes in CGE treatment
 cellmove<-round(table(dpool$cell[dpool$tree==1],dpool$movewhere[dpool$tree==1])/sum(table(dpool$movewhere[dpool$tree==1]))*100,2)
 rownames(cellmove)<-c("HH","HD","DD")
 colnames(cellmove)<-c("oneshot 1st","seq.","oneshot 2nd")
@@ -61,16 +70,14 @@ colnames(playfirstgender)<-c("1st H","1st D")
 playsecondgender<-table(dpool$gender[dpool$tree==1 & dpool$move==1],dpool$play[dpool$tree==1 & dpool$move==1])
 colnames(playsecondgender)<-c("2nd H","2nd D")
 
-##In the sequential game. What 2nd mover plays?
-#table(dpool$play[dpool$]
 
-
-
+## Plot of order of play and gender
 pdf("countgendermoveplay.png")
 barplot((cbind(movegender,playfirstgender,playsecondgender)/sum(movegender)),beside=T,border="white",ylim=c(0,0.4))
 legend(12,0.3,inset=.02,legend=c("women","men"),fill=gray.colors(2),bty = "n",border=F,y.intersp=1.5,cex=1.2)
 dev.off()
 
+## Creating variables by gender 
 playgendero<-table(dpool$play[dpool$treo==1],dpool$gender[dpool$treo==1])
 playgenders<-table(dpool$play[dpool$tres==1],dpool$gender[dpool$tres==1])
 playgender<-table(dpool$play[dpool$tree==1],dpool$gender[dpool$tree==1])
@@ -79,6 +86,8 @@ plays<-playgenders[2,]/apply(playgenders,2,sum)*100
 playe<-playgender[2,]/apply(playgender,2,sum)*100
 play.bar<-cbind(playo,plays,playe)
 colnames(play.bar)<-c("CGO","CGS","CGE")
+
+## Plot of gender and play
 pdf("genderplay.png")
 play.barp<-barplot(play.bar,beside=T,ylim=c(0,100),border="white")
 legend(2.0,100,inset=.1,legend=c("% women playing D","% men playing D"),fill=gray.colors(2),bty = "n",border=F,y.intersp=2,cex=0.9)
@@ -91,21 +100,22 @@ barplot(cbind(playfirstgender,playsecondogender),beside=T)
 ##For those that pick second and its a seq, what do they play? 
 table(dpool$play[dpool$tree==1 & dpool$move==1 & dpool$movewhere==1],dpool$gender[dpool$tree==1 & dpool$move==1  & dpool$movewhere==1])
 
-
+## Average of choices and payoffs 
 poolchoice<-ave(dpool$play,dpool$tre,FUN=function(x) mean(x, na.rm=T))
 poolchoice<-unique(poolchoice)
 
 poolpayoff<-ave(dpool$payoff,dpool$tre,FUN=function(x) mean(x, na.rm=T))
 poolpayoff<-unique(poolpayoff)
 
-### Regressions
+### Regressions. Not reported in the paper. 
 dreg<-dpool[dpool$treo==1,]
-mylogit <- lm(play ~ play, data = dereg, family = "binomial")
+mylogit <- lm(play ~ gender, data = dereg, family = "binomial")
 m <- lm(play ~ gender, data = dreg)
 m <- lm(payoff ~ gender, data = dreg)
 
+###Non-parametric tests. Included in the paper. 
 
-##Non-parametric tests 
+##DD per session
 dpool$tredd<-ave(dpool$dd,dpool$session,FUN=function(x) mean(x, na.rm=T))
 testdd<-unique(dpool[,c("session","tredd")])
 

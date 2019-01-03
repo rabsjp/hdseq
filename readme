@@ -1,0 +1,16 @@
+Data and Analysis included in "Gender differences in an endogenous timing conflict game"
+by P.J. Grossman, Y. Park, and J.P. Rabanal and O.A. Rud
+
+the folder data coints the data from the three treatments CGO, CGS and CGE. 
+
+the analysis is divided in two files. 
+
+- pooledanalysis.R
+
+It creates plots and runs non-parametric tests using pooled data. Results are reported in the manuscript. The plots are saved in the data folder. 
+
+- subjanalysis.R
+
+It creates plots and runs non-parametric tests using subject data. Results are reported in the manuscript. The plots are saved in the data folder. 
+
+Any questions/enquiries, please contact jeanpaul.rabanal at monash dot edu. 

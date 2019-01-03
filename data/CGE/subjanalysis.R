@@ -1,3 +1,6 @@
+### It contains analysis using subject data
+### The data from sessions are in /data folder
+
 rm(list = ls())
 setwd("/cloud/project/data/")
 load("hdall.Rda")
@@ -10,17 +13,18 @@ dsub$mediancut<-ave(dsub$cutoff,dsub$idu,FUN=function(x) median(x, na.rm=T))
 dsub$moverate<-ave(dsub$move,dsub$idu,FUN=function(x) mean(x, na.rm=T))
 dsub$choicerate<-ave(dsub$play,dsub$idu,FUN=function(x) mean(x, na.rm=T))
 
-#Important variables are gender, subject_id, treatmens (seq,endog,one) 
+## Important variables are gender, subject_id, treatmens (seq,endog,one) 
 dsub<-dsub[,c("gender","idu","tres","tree","treo","mediancut","moverate","choicerate")]
 dsub<-unique(dsub)
 
+
+## CDF of cutoff across treatments. Theory predicts CGS,CGS to FSD: CGO
 cdf_x<-  ecdf(dsub$mediancut[dsub$treo==1])
 cdf_xs<-  ecdf(dsub$mediancut[dsub$tres==1])
 cdf_xe<-  ecdf(dsub$mediancut[dsub$tree==1])
 x<-seq(0.0,101,5)
 
 
-#CDF of cutoff across treatments. Theory predicts CGS,CGS to FSD: CGO
 pdf("cdfcutoff.pdf")
 plot(cdf_x,verticals=T,xlim=c(0,101),cex=0,lwd=3,main="",xlab="cutoff",ylab="CDF",xaxt='n')
 lines(cdf_xs,verticals=T,lty=2,cex=0,lwd=1)
@@ -35,7 +39,7 @@ text(36,0.825,expression(x^{CGO}),cex = 1)
 legend(0.01,0.9,legend=c("CGO","CGS","CGE"),lwd=c(3,1,2),lty=c(1,2,3),bty = "n",y.intersp=2,border=F,cex=1)
 dev.off()
 
-#CDF of cutoff early/late move in CGE. Theory predicts early FSD late
+## CDF of cutoff early/late move in CGE. Theory predicts early FSD late
 day_cutoff<-dsub$mediancut[dsub$tree==1 & dsub$moverate<=0.5]
 nigth_cutoff<-dsub$mediancut[dsub$tree==1 & dsub$moverate>0.5]
 cdf_xe_day<-  ecdf(day_cutoff)
@@ -102,6 +106,8 @@ axis(1, at=x,labels=as.character.numeric_version(x), las=1)
 text(92.5,0.25,expression(x^{CGE}),cex = 1)
 dev.off()
 
+## CDF of choices by treatment
+
 cdf_ch<-  ecdf(dsub$choicerate[dsub$treo==1])
 cdf_chs<-  ecdf(dsub$choicerate[dsub$tres==1])
 cdf_che<-  ecdf(dsub$choicerate[dsub$tree==1])
@@ -114,7 +120,7 @@ xch<-seq(0.0,1.0,.1)
 axis(1, at=xch,labels=as.character.numeric_version(xch), las=1)
 dev.off()
 
-## Now we study gender differences
+## CDF by gender. m men f is women. 
 cdf_xmo<-  ecdf(dsub$mediancut[dsub$treo==1 & dsub$gender==1])
 cdf_xfo<-  ecdf(dsub$mediancut[dsub$treo==1 & dsub$gender==0])
 cdf_xms<-  ecdf(dsub$mediancut[dsub$tres==1 & dsub$gender==1])
@@ -186,12 +192,7 @@ text(36,0.825,expression(x^{CGO}),cex = 1)
 legend(0.01,0.9,legend=c("CGO men","CGS men","CGE men"),lwd=c(3,1,2),lty=c(1,2,3),bty = "n",y.intersp=2,border=F,cex=1)
 dev.off()
 
-## Test 
-wilcox.test(dsub$mediancut[dsub$tres==1 & dsub$gender==0],dsub$mediancut[dsub$treo==1 & dsub$gender==0],alternative = "g")
-ks.test(dsub$mediancut[dsub$tres==1 & dsub$gender==0],dsub$mediancut[dsub$treo==1 & dsub$gender==0],alternative = "l")
-
-# who moves early? 
-
+## who moves early? 
 cdfmovem<-ecdf(dsub$moverate[dsub$tree==1 & dsub$gender==1])
 cdfmovef<-ecdf(dsub$moverate[dsub$tree==1 & dsub$gender==0])
 
@@ -206,23 +207,28 @@ legend(0.01,0.9,legend=c("men","women"),lwd=c(3,1),lty=c(1,2),bty = "n",y.inters
 dev.off()
 
 
+## Parametric Test. not included in the paper. 
 dsub$gtree<-dsub$tree*dsub$gender
 dsub$gtres<-dsub$tres*dsub$gender
-
 summary(lm(dsub$cutoff[dsub$tree==1] ~ dsub$move[dsub$tree==1]))
 
-###Tests
+## Non-parametric test of cutoff in treatments 
+
+
+# point tests
 n<-length(dsub$mediancut[dsub$treo==1])
 ks.test(dsub$mediancut[dsub$treo==1],rep(33,n),alternative = c("l"))
 wilcox.test(dsub$mediancut[dsub$treo==1],rep(33,n),alternative = "g")
 
+# battery of tests across treatments 
+wilcox.test(dsub$mediancut[dsub$tres==1 & dsub$gender==0],dsub$mediancut[dsub$treo==1 & dsub$gender==0],alternative = "g")
+ks.test(dsub$mediancut[dsub$tres==1 & dsub$gender==0],dsub$mediancut[dsub$treo==1 & dsub$gender==0],alternative = "l")
 
 ks.test(dsub$mediancut[dsub$treo==1],dsub$mediancut[dsub$tres==1],alternative = c("greater"))
 wilcox.test(dsub$mediancut[dsub$tres==1],dsub$mediancut[dsub$treo==1],alternative = "g")
 
 ks.test(dsub$mediancut[dsub$tres==1],dsub$mediancut[dsub$tree==1],alternative = c("two.sided"))
 wilcox.test(dsub$mediancut[dsub$tres==1],dsub$mediancut[dsub$tree==1],alternative = c("two.sided"))
-
 
 wilcox.test(dsub$mediancut[dsub$tres==1],dsub$mediancut[dsub$treo==1],alternative = "g")
 ks.test(dsub$mediancut[dsub$tres==1],dsub$mediancut[dsub$treo==1],alternative = "l")

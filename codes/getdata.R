@@ -1,3 +1,7 @@
+### It saves the raw data from REBEL lab
+### The output file is hdall.Rda
+### Recall that there are three treatments CGO, CGS and CGE. 
+
 rm(list = ls())
 setwd("/cloud/project/data/CGO")
 files = list.files(pattern="exp*")
