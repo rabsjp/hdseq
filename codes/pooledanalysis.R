@@ -13,8 +13,8 @@ totalobs<-apply(table(d$session,d$gender),1,sum)
 
 
 ### Creating important variables
-#dpool<-d[d$period>5,]
-dpool<-d
+dpool<-d[d$period>0,]
+#dpool<-d
 dpool$firstmover<-0
 dpool$cell<-ave(dpool$play,dpool$idg,FUN=function(x) sum(x, na.rm=T))
 dpool$dd<-0
@@ -23,6 +23,20 @@ dpool$movewhere<-ave(dpool$move,dpool$idg,FUN=function(x) sum(x, na.rm=T))
 dpool$gendergroup<-ave(dpool$gender,dpool$idg,FUN=function(x) sum(x, na.rm=T))
 dpool$firstmover[dpool$move==0 & dpool$tre>0]<-dpool$play[dpool$move==0& dpool$tre>0]
 dpool$firstmover<-ave(dpool$firstmover,dpool$idg,FUN=function(x) sum(x, na.rm=T))
+
+
+##DD per session
+dpool$tredd<-ave(dpool$dd,dpool$session,FUN=function(x) mean(x, na.rm=T))
+testdd<-unique(dpool[,c("session","tredd")])
+
+ks.test(testdd$tredd[testdd$session<20],testdd$tredd[testdd$session>30],alternative = c("g"))
+wilcox.test(testdd$tredd[testdd$session<20],testdd$tredd[testdd$session>30],alternative = c("l"))
+
+ks.test(testdd$tredd[testdd$session>20 & testdd$session<30],testdd$tredd[testdd$session>30],alternative = c("two.sided"))
+wilcox.test(testdd$tredd[testdd$session>20 & testdd$session<30],testdd$tredd[testdd$session>30],alternative = c("two.sided"))
+
+
+
 
 ## Analyzing choices of first mover and gender
 table(dpool$play[dpool$movewhere==1 & dpool$move==1 & dpool$tres==1],dpool$firstmover[dpool$movewhere==1 & dpool$move==1 & dpool$tres==1])/396
@@ -121,6 +135,10 @@ testdd<-unique(dpool[,c("session","tredd")])
 
 ks.test(testdd$tredd[testdd$session<20],testdd$tredd[testdd$session>30],alternative = c("g"))
 wilcox.test(testdd$tredd[testdd$session<20],testdd$tredd[testdd$session>30],alternative = c("l"))
+
+ks.test(testdd$tredd[testdd$session<20],testdd$tredd[testdd$session>20 & testdd$session<30],alternative = c("g"))
+wilcox.test(testdd$tredd[testdd$session<20],testdd$tredd[testdd$session>20 & testdd$session<30],alternative = c("l"))
+
 
 ks.test(testdd$tredd[testdd$session>20 & testdd$session<30],testdd$tredd[testdd$session>30],alternative = c("two.sided"))
 wilcox.test(testdd$tredd[testdd$session>20 & testdd$session<30],testdd$tredd[testdd$session>30],alternative = c("two.sided"))

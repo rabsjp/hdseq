@@ -11,6 +11,6 @@ It creates plots and runs non-parametric tests using pooled data. Results are re
 
 - subjanalysis.R
 
-It creates plots and runs non-parametric tests using subject data. Results are reported in the manuscript. The plots are saved in the data folder. 
+It creates plots and runs non-parametric tests using subject data. Results are reported in the manuscript. The plots are saved in the data/paperplots folder. 
 
 Any questions/enquiries, please contact jeanpaul.rabanal at monash dot edu. 

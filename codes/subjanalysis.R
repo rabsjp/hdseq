@@ -3,7 +3,7 @@ setwd("/cloud/project/data/")
 load("hdall.Rda")
 
 ## We work with periods 6-11 to account for learning
-dsub<-d[d$period>5,]
+dsub<-d[d$period>0,]
 
 ## We take the median cutoff, average move rate, average choice rate
 dsub$mediancut<-ave(dsub$cutoff,dsub$idu,FUN=function(x) median(x, na.rm=T))
@@ -83,7 +83,7 @@ abline(h=.5,col="gray",lty=c(1))
 #abline(v=90,col="gray",lty=c(1)) #eqm for cge
 abline(v=33.33,col="gray",lty=c(1)) #eqm for cgo
 text(36,0.825,expression(x^{CGO}),cex = 1)
-legend(0.01,0.9,legend=c("CGO male","CGO female"),lwd=c(3,1),lty=c(1,2),bty = "n",y.intersp=2,border=F,cex=1)
+legend(0.01,0.9,legend=c("CGO men","CGO women"),lwd=c(3,1),lty=c(1,2),bty = "n",y.intersp=2,border=F,cex=1)
 dev.off()
 
 pdf("cdfcutoffgender_s.pdf")
@@ -94,7 +94,7 @@ abline(h=.5,col="gray",lty=c(1))
 abline(v=90,col="gray",lty=c(1)) #eqm for cge
 #abline(v=33.33,col="gray",lty=c(1)) #eqm for cgo
 text(92.5,0.25,expression(x^{CGS}),cex = 1)
-legend(0.01,0.9,legend=c("CGS male","CGS female"),lwd=c(3,1),lty=c(1,2),bty = "n",y.intersp=2,border=F,cex=1)
+legend(0.01,0.9,legend=c("CGS men","CGS women"),lwd=c(3,1),lty=c(1,2),bty = "n",y.intersp=2,border=F,cex=1)
 dev.off()
 
 pdf("cdfcutoffgender_e.pdf")
@@ -105,7 +105,7 @@ abline(h=.5,col="gray",lty=c(1))
 abline(v=90,col="gray",lty=c(1)) #eqm for cge
 #abline(v=33.33,col="gray",lty=c(1)) #eqm for cgo
 text(92.5,0.25,expression(x^{CGE}),cex = 1)
-legend(0.01,0.9,legend=c("CGE male","CGE female"),lwd=c(3,1),lty=c(1,2),bty = "n",y.intersp=2,border=F,cex=1)
+legend(0.01,0.9,legend=c("CGE men","CGE women"),lwd=c(3,1),lty=c(1,2),bty = "n",y.intersp=2,border=F,cex=1)
 dev.off()
 
 pdf("cdfcutoffgender_female.pdf")
@@ -119,7 +119,7 @@ abline(v=33.33,col="gray",lty=c(1)) #eqm for cgo
 
 text(92.5,0.25,expression(x^{CGS}),cex = 1)
 text(36,0.825,expression(x^{CGO}),cex = 1)
-legend(0.01,0.9,legend=c("CGO female","CGS female","CGE female"),lwd=c(3,1,2),lty=c(1,2,3),bty = "n",y.intersp=2,border=F,cex=1)
+legend(0.01,0.9,legend=c("CGO women","CGS women","CGE women"),lwd=c(3,1,2),lty=c(1,2,3),bty = "n",y.intersp=2,border=F,cex=1)
 
 dev.off()
 
@@ -134,13 +134,8 @@ abline(v=33.33,col="gray",lty=c(1)) #eqm for cgo
 
 text(92.5,0.25,expression(x^{CGS}),cex = 1)
 text(36,0.825,expression(x^{CGO}),cex = 1)
-legend(0.01,0.9,legend=c("CGO male","CGS male","CGE male"),lwd=c(3,1,2),lty=c(1,2,3),bty = "n",y.intersp=2,border=F,cex=1)
+legend(0.01,0.9,legend=c("CGO men","CGS men","CGE men"),lwd=c(3,1,2),lty=c(1,2,3),bty = "n",y.intersp=2,border=F,cex=1)
 dev.off()
-
-wilcox.test(dsub$mediancut[dsub$tres==1 & dsub$gender==0],dsub$mediancut[dsub$treo==1 & dsub$gender==0],alternative = "g")
-ks.test(dsub$mediancut[dsub$tres==1 & dsub$gender==0],dsub$mediancut[dsub$treo==1 & dsub$gender==0],alternative = "l")
-
-
 
 # who moves early? 
 
@@ -154,7 +149,7 @@ lines(cdfmovef,verticals=T,lty=2,cex=0,lwd=1)
 abline(h=.5,col="gray",lty=c(1))
 xch<-seq(0.0,1.0,.1)
 axis(1, at=xch,labels=as.character.numeric_version(xch), las=1)
-legend(0.01,0.9,legend=c("male","female"),lwd=c(3,1),lty=c(1,2),bty = "n",y.intersp=2,border=F,cex=1)
+legend(0.01,0.9,legend=c("men","women"),lwd=c(3,1),lty=c(1,2),bty = "n",y.intersp=2,border=F,cex=1)
 dev.off()
 
 
@@ -163,6 +158,11 @@ dsub$gtres<-dsub$tres*dsub$gender
 
 summary(lm(dsub$cutoff[dsub$tree==1] ~ dsub$move[dsub$tree==1]))
 
+
+##Tests
+ks.test(dsub$mediancut[dsub$gender==0 & dsub$tree==1],dsub$mediancut[dsub$gender==1 & dsub$tree==1],alternative = "g")
+wilcox.test(dsub$mediancut[dsub$gender==0 & dsub$tree==1],dsub$mediancut[dsub$gender==1 & dsub$tree==1],alternative = "l")
+
 wilcox.test(dsub$mediancut[dsub$tres==1],dsub$mediancut[dsub$treo==1],alternative = "g")
 ks.test(dsub$mediancut[dsub$tres==1],dsub$mediancut[dsub$treo==1],alternative = "l")
 
@@ -170,3 +170,7 @@ wilcox.test(dsub$mediancut[dsub$tree==1],dsub$mediancut[dsub$treo==1],alternativ
 ks.test(dsub$mediancut[dsub$tree==1],dsub$mediancut[dsub$treo==1],alternative = "l")
       
 ks.test(dsub$mediancut[dsub$gender==1 & dsub$tree==1],dsub$mediancut[dsub$gender==1 & dsub$treo==1],alternative = "l")
+wilcox.test(dsub$mediancut[dsub$gender==1 & dsub$tree==1],dsub$mediancut[dsub$gender==1 & dsub$treo==1],alternative = "g")
+
+wilcox.test(dsub$mediancut[dsub$tres==1 & dsub$gender==0],dsub$mediancut[dsub$tres==1 & dsub$gender==0],alternative = "g")
+ks.test(dsub$mediancut[dsub$tres==1 & dsub$gender==0],dsub$mediancut[dsub$tres==1 & dsub$gender==0],alternative = "l")
