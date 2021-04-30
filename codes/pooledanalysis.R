@@ -2,7 +2,7 @@
 ### The data from sessions are in /data folder
 
 rm(list = ls())
-setwd("/cloud/project/data/")
+setwd("~/Desktop/jotarepos/hdseq/data/")
 load("hdall.Rda")
 
 ### Table with gender composition in each session
@@ -35,9 +35,6 @@ wilcox.test(testdd$tredd[testdd$session<20],testdd$tredd[testdd$session>30],alte
 ks.test(testdd$tredd[testdd$session>20 & testdd$session<30],testdd$tredd[testdd$session>30],alternative = c("two.sided"))
 wilcox.test(testdd$tredd[testdd$session>20 & testdd$session<30],testdd$tredd[testdd$session>30],alternative = c("two.sided"))
 
-
-
-
 ## Analyzing choices of first mover and gender
 table(dpool$play[dpool$movewhere==1 & dpool$move==1 & dpool$tres==1],dpool$firstmover[dpool$movewhere==1 & dpool$move==1 & dpool$tres==1])/396
 table(dpool$gender[dpool$movewhere==1 & dpool$move==1 & dpool$tres==1 & dpool$firstmover==1],dpool$play[dpool$movewhere==1 & dpool$move==1 & dpool$tres==1 & dpool$firstmover==1])
@@ -48,6 +45,8 @@ cells<-table(dpool$cell[dpool$tres==1])/length(dpool$cell[dpool$tres==1])
 celle<-table(dpool$cell[dpool$tree==1])/length(dpool$cell[dpool$tree==1])
 cell.bar<-cbind(cello,cells,celle)
 colnames(cell.bar)<-c("CGO","CGS","CGE")
+
+table(dpool$cell[dpool$tres==1 & dpool$move==0 & dpool$play==0])/length(dpool$cell[dpool$tres==1])
 
 ### Creating cutoff choices. Mean by treatment 
 poolcut<-ave(dpool$cutoff,dpool$tre,FUN=function(x) mean(x, na.rm=T))
@@ -62,11 +61,11 @@ poolcut_f<-unique(poolcut_f)
 ## Plot of cutoffs and cell choices
 pdf("jointcut.pdf")
 cell.barp<-barplot(cell.bar,beside=T,ylim=c(0,.8),border="white")
-lines(x = cell.barp[1,]+1, y = poolcut_m/101,lty=2,lwd=2)
-lines(x = cell.barp[1,]+1, y = poolcut_f/101,lty=1,lwd=3)
+#lines(x = cell.barp[1,]+1, y = poolcut_m/101,lty=2,lwd=2)
+#lines(x = cell.barp[1,]+1, y = poolcut_f/101,lty=1,lwd=3)
 legend(0.6,0.8,inset=.02,legend=c("HH","HD","DD"),fill=gray.colors(3),bty = "n",border=F,y.intersp=.8,cex=.9)
-text(cell.barp[1,3]+1.5,0.77,"men cutoff",cex = .8)
-text(cell.barp[1,3],0.6,"women cutoff ",cex = .8)
+#text(cell.barp[1,3]+1.5,0.77,"men cutoff",cex = .8)
+#text(cell.barp[1,3],0.6,"women cutoff ",cex = .8)
 dev.off()
 
 ### Table of outcomes in CGE treatment
@@ -130,11 +129,17 @@ m <- lm(payoff ~ gender, data = dreg)
 ###Non-parametric tests. Included in the paper. 
 
 ##DD per session
+dpool$trecut<-ave(dpool$cutoff,dpool$session,FUN=function(x) mean(x, na.rm=T))
+testcut<-unique(dpool[,c("session","trecut")])
+
 dpool$tredd<-ave(dpool$dd,dpool$session,FUN=function(x) mean(x, na.rm=T))
 testdd<-unique(dpool[,c("session","tredd")])
 
 ks.test(testdd$tredd[testdd$session<20],testdd$tredd[testdd$session>30],alternative = c("g"))
 wilcox.test(testdd$tredd[testdd$session<20],testdd$tredd[testdd$session>30],alternative = c("l"))
+
+wilcox.test(testcut$trecut[testcut$session<20],testcut$trecut[testcut$session>30])
+wilcox.test(testcut$trecut[testcut$session<20],testcut$trecut[testcut$session>20 &testcut$session<30])
 
 ks.test(testdd$tredd[testdd$session<20],testdd$tredd[testdd$session>20 & testdd$session<30],alternative = c("g"))
 wilcox.test(testdd$tredd[testdd$session<20],testdd$tredd[testdd$session>20 & testdd$session<30],alternative = c("l"))
@@ -143,4 +148,9 @@ wilcox.test(testdd$tredd[testdd$session<20],testdd$tredd[testdd$session>20 & tes
 ks.test(testdd$tredd[testdd$session>20 & testdd$session<30],testdd$tredd[testdd$session>30],alternative = c("two.sided"))
 wilcox.test(testdd$tredd[testdd$session>20 & testdd$session<30],testdd$tredd[testdd$session>30],alternative = c("two.sided"))
 
+##best-responding? 
 
+dseq<-dpool[dpool$tres==1,]
+dseq<-dseq[dseq$move==1,]
+sum(dseq$firstmover==1)
+dseq[dseq$payoff<100  & dseq$firstmover==1,]

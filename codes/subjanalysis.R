@@ -1,18 +1,50 @@
 rm(list = ls())
-setwd("/cloud/project/data/")
+library(ggplot2)
+setwd("~/Desktop/jotarepos/hdseq/data/")
 load("hdall.Rda")
+d_o<-d[d$treo==1,]
+d_o$mp<-ave(d_o$cutoff,d_o$period,FUN=function(x) mean(x, na.rm=T))
+d_o$sp<-ave(d_o$cutoff,d_o$period,FUN=function(x) sd(x, na.rm=T))
+d_o<-d_o[,c("period","mp","sp")]
+d_o<-unique(d_o)
+d_s<-d[d$tres==1,]
+d_s$mp<-ave(d_s$cutoff,d_s$period,FUN=function(x) mean(x, na.rm=T))
+d_s$sp<-ave(d_s$cutoff,d_s$period,FUN=function(x) sd(x, na.rm=T))
+d_s<-d_s[,c("period","mp","sp")]
+d_s<-unique(d_s)
+d_e<-d[d$tree==1,]
+d_e$mp<-ave(d_e$cutoff,d_e$period,FUN=function(x) mean(x, na.rm=T))
+d_e$sp<-ave(d_e$cutoff,d_e$period,FUN=function(x) sd(x, na.rm=T))
+d_e<-d_e[,c("period","mp","sp")]
+d_e<-unique(d_e)
+
+pdf("periodcutoff.pdf")
+plot(d_o$period,d_o$mp,lty=1,ylim=c(30,80),type="l",lwd=3,xlab="period",ylab = "cutoff")
+#segments(d_o$period,d_o$mp-d_o$sp,d_o$period,d_o$mp+d_o$sp)
+lines(d_s$mp,lty=2)
+lines(d_e$mp,col="black",lty=4,lwd=2)
+legend(2,50,legend=c("CGO","CGS","CGE"),lwd=c(3,1,2),lty=c(1,2,4),bty = "n",y.intersp=2,border=F,cex=1)
+dev.off()
+
 
 ## We work with periods 6-11 to account for learning
-dsub<-d[d$period>0,]
 
+dsub<-d[d$period>5,]
+dse<-dsub
 ## We take the median cutoff, average move rate, average choice rate
 dsub$mediancut<-ave(dsub$cutoff,dsub$idu,FUN=function(x) median(x, na.rm=T))
+dse$mediancut<-ave(dse$cutoff,dse$session,FUN=function(x) mean(x, na.rm=T))
+
 dsub$moverate<-ave(dsub$move,dsub$idu,FUN=function(x) mean(x, na.rm=T))
 dsub$choicerate<-ave(dsub$play,dsub$idu,FUN=function(x) mean(x, na.rm=T))
 
 #Important variables are gender, subject_id, treatmens (seq,endog,one) 
 dsub<-dsub[,c("gender","idu","tres","tree","treo","mediancut","moverate","choicerate")]
 dsub<-unique(dsub)
+
+dse<-dse[,c("session","tres","tree","treo","mediancut")]
+dse<-unique(dse)
+
 
 cdf_x<-  ecdf(dsub$mediancut[dsub$treo==1])
 cdf_xs<-  ecdf(dsub$mediancut[dsub$tres==1])
@@ -160,6 +192,9 @@ summary(lm(dsub$cutoff[dsub$tree==1] ~ dsub$move[dsub$tree==1]))
 
 
 ##Tests
+wilcox.test(dsub$mediancut[dsub$treo==1],dsub$mediancut[dsub$tres==1])
+
+
 ks.test(dsub$mediancut[dsub$gender==0 & dsub$tree==1],dsub$mediancut[dsub$gender==1 & dsub$tree==1],alternative = "g")
 wilcox.test(dsub$mediancut[dsub$gender==0 & dsub$tree==1],dsub$mediancut[dsub$gender==1 & dsub$tree==1],alternative = "l")
 
@@ -174,3 +209,11 @@ wilcox.test(dsub$mediancut[dsub$gender==1 & dsub$tree==1],dsub$mediancut[dsub$ge
 
 wilcox.test(dsub$mediancut[dsub$tres==1 & dsub$gender==0],dsub$mediancut[dsub$tres==1 & dsub$gender==0],alternative = "g")
 ks.test(dsub$mediancut[dsub$tres==1 & dsub$gender==0],dsub$mediancut[dsub$tres==1 & dsub$gender==0],alternative = "l")
+
+
+##Tests
+wilcox.test(dsub$mediancut[dsub$treo==1],dsub$mediancut[dsub$tres==1])
+wilcox.test(dse$mediancut[dse$treo==1],dse$mediancut[dse$tres==1])
+
+
+
